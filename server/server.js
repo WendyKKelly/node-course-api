@@ -1,6 +1,6 @@
-var {ObjectID} = require('mongodb');
 var express = require('express');
 var bodyParser = require('body-parser');
+var {ObjectID} = require('mongodb');
 
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
@@ -24,48 +24,51 @@ app.post('/todos', (req, res) => {
 });
 
 app.get('/todos', (req, res) => {
-  Todo.find().then((todos)=> {
+  Todo.find().then((todos) => {
     res.send({todos});
   }, (e) => {
     res.status(400).send(e);
   });
 });
-//GET /todos/12345
+
 app.get('/todos/:id', (req, res) => {
   var id = req.params.id;
-  //valid id useing isValid
-  //if not valid stop function and respond with 404
-if (!ObjectID.isValid(id)) {
-   res.status(404).send();
-}
-   Todo.findById(id).then((todo) => {
-     if (!todo) {
-     return res.status(404).send();
-   }
 
-   res.send({todo});
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
 
- }).catch((e) => {
-  res.status(400).send();
-   //find by id
- });
+  Todo.findById(id).then((todo) => {
+    if (!todo) {
+      return res.status(404).send();
+    }
+
+    res.send({todo});
+  }).catch((e) => {
+    res.status(400).send();
+  });
 });
-//success
-     //if todo send back
-     //if no todo send a 404 --
-   //error
-     //400 -and send empty body back
 
- //res.send(req.params);
+app.delete('/todos/:id', (req, res) => {
+  var id = req.params.id;
 
- //var id = '5a680d03f6fdae185b20483f';
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
 
+  Todo.findByIdAndRemove(id).then((todo) => {
+    if (!todo) {
+      return res.status(404).send();
+    }
 
-
-
+    res.send(todo);
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
 
 app.listen(port, () => {
-  console.log(`Started on port ${port}`);
+  console.log(`Started up at port ${port}`);
 });
 
 module.exports = {app};

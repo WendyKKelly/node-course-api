@@ -34,4 +34,4 @@ User.findById(id).then((user) => {
 //   }
 //   console.log('Todo by Id', todo);
 // }).catch((e) => console.log(e));
-//user.findById
+// user.findById
